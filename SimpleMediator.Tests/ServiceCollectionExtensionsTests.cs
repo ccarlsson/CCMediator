@@ -15,7 +15,6 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-
         services.AddSimpleMediator(Assembly.GetExecutingAssembly());
         var provider = services.BuildServiceProvider();
 

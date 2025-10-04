@@ -6,6 +6,13 @@ namespace SimpleMediator;
 // Extension methods for DI registration
 public static class ServiceCollectionExtensions
 {
+    /// <summary>
+    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// </summary>
+    /// <param name="services">The service collection to register services into.</param>
+    /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
+    /// <returns>The same service collection instance to enable chaining.</returns>
     public static IServiceCollection AddSimpleMediator(this IServiceCollection services, params Assembly[] assemblies)
     {
         // Register the mediator
