@@ -1,13 +1,13 @@
 ﻿# Software Requirements Specification  
-## MiniMediator — A Lightweight Mediator Library for .NET 10
+## SimpleMediator — A Lightweight Mediator Library for .NET 10
 
 ## 1. Introduction
 
 ### 1.1 Purpose  
-The purpose of **MiniMediator** is to provide a minimal, easy‑to‑understand alternative to MediatR for .NET 10 applications. It emphasizes simplicity, predictability, and transparent message flow, making it ideal for teaching and small‑to‑medium projects.
+The purpose of **SimpleMediator** is to provide a minimal, easy‑to‑understand alternative to MediatR for .NET 10 applications. It emphasizes simplicity, predictability, and transparent message flow, making it ideal for teaching and small‑to‑medium projects.
 
 ### 1.2 Scope  
-MiniMediator will support:
+SimpleMediator will support:
 
 - Request/Response messaging  
 - Notification broadcasting  
@@ -15,7 +15,7 @@ MiniMediator will support:
 - Dependency injection integration  
 - Strongly typed generics  
 
-MiniMediator will *not* include:
+SimpleMediator will *not* include:
 
 - Cross‑process messaging  
 - Retry policies  
@@ -34,7 +34,7 @@ MiniMediator will *not* include:
 ## 2. Overall Description
 
 ### 2.1 Product Perspective  
-MiniMediator is a library consumed by .NET 10 applications. It integrates with the built‑in DI container and exposes a single `IMediator` interface.
+SimpleMediator is a library consumed by .NET 10 applications. It integrates with the built‑in DI container and exposes a single `IMediator` interface.
 
 ### 2.2 Product Features  
 - Send requests  
@@ -72,7 +72,7 @@ MiniMediator is a library consumed by .NET 10 applications. It integrates with t
 - Request/response modification  
 
 ### 3.4 Dependency Injection Integration  
-- Extension method: `AddMiniMediator`  
+- Extension method: `AddSimpleMediator`  
 - Automatic handler registration  
 - Manual registration supported  
 
