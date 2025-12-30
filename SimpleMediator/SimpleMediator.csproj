@@ -5,7 +5,7 @@
 		<PackageId>SimpleMediator</PackageId>
 		<Version>1.0.1</Version>
 		<Authors>Christer Carlsson</Authors>
-		<Description>A simple MediatR implementation</Description>
+		<Description>A simple Mediator implementation</Description>
 		<PackageTags>mediator;simple;cqrs</PackageTags>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
