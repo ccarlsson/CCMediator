@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Concurrent;
+using System.Reflection;
 
 namespace SimpleMediator;
 
@@ -12,6 +13,10 @@ public class Mediator(IServiceProvider serviceProvider) : IMediator
         public static readonly ConcurrentDictionary<Type, Func<IServiceProvider, object, CancellationToken, Task<TResponse>>> Cache = new();
     }
 
+    private static readonly MethodInfo GetSingleHandlerMethod = typeof(RequestHandlerResolver)
+        .GetMethod(nameof(RequestHandlerResolver.GetSingleHandler), BindingFlags.Public | BindingFlags.Static)
+        ?? throw new InvalidOperationException("Unable to locate RequestHandlerResolver.GetSingleHandler method.");
+
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         var requestType = request.GetType();
@@ -22,26 +27,25 @@ public class Mediator(IServiceProvider serviceProvider) : IMediator
 
     private static Func<IServiceProvider, object, CancellationToken, Task<TResponse>> BuildSendInvoker<TResponse>(Type requestType)
     {
-        // Build a compiled lambda equivalent to:
-        // (sp, req, ct) => sp.GetRequiredService<IRequestHandler<TRequest, TResponse>>().Handle((TRequest)req, ct)
+        // Build a compiled lambda equivalent to resolving a single handler via RequestHandlerResolver and invoking it.
         var spParam = System.Linq.Expressions.Expression.Parameter(typeof(IServiceProvider), "sp");
         var reqParam = System.Linq.Expressions.Expression.Parameter(typeof(object), "req");
         var ctParam = System.Linq.Expressions.Expression.Parameter(typeof(CancellationToken), "ct");
 
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, typeof(TResponse));
 
-        var getReqService = typeof(ServiceProviderServiceExtensions)
-            .GetMethod(nameof(ServiceProviderServiceExtensions.GetRequiredService), [typeof(IServiceProvider), typeof(Type)])!;
-
         var handlerExpr = System.Linq.Expressions.Expression.Convert(
-            System.Linq.Expressions.Expression.Call(getReqService, spParam, System.Linq.Expressions.Expression.Constant(handlerType, typeof(Type))),
+            System.Linq.Expressions.Expression.Call(
+                GetSingleHandlerMethod,
+                spParam,
+                System.Linq.Expressions.Expression.Constant(requestType, typeof(Type)),
+                System.Linq.Expressions.Expression.Constant(typeof(TResponse), typeof(Type))),
             handlerType);
 
         var castReq = System.Linq.Expressions.Expression.Convert(reqParam, requestType);
         var handleMethod = handlerType.GetMethod("Handle")!;
 
         var callHandle = System.Linq.Expressions.Expression.Call(handlerExpr, handleMethod, castReq, ctParam);
-        // callHandle is Task<TResponse>, so we can return it directly
         var lambda = System.Linq.Expressions.Expression.Lambda<Func<IServiceProvider, object, CancellationToken, Task<TResponse>>>(
             callHandle, spParam, reqParam, ctParam);
 

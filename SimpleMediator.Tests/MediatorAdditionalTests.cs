@@ -20,16 +20,15 @@ public class MediatorAdditionalTests
         // Arrange
         var request = new TestRequest { Message = "Hello" };
         var handlerMock = new Mock<IRequestHandler<TestRequest, string>>();
-        var cts = new CancellationTokenSource();
-        var token = cts.Token;
+        var token = new CancellationTokenSource().Token;
 
         handlerMock
             .Setup(h => h.Handle(request, It.Is<CancellationToken>(ct => ct.Equals(token))))
             .ReturnsAsync("Handled: Hello");
 
         _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestRequest, string>)))
-            .Returns(handlerMock.Object);
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Returns(new[] { handlerMock.Object });
 
         // Act
         var response = await _mediator.Send(request, token);
@@ -50,8 +49,8 @@ public class MediatorAdditionalTests
             .ThrowsAsync(new InvalidOperationException("handler failed"));
 
         _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestRequest, string>)))
-            .Returns(handlerMock.Object);
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Returns(new[] { handlerMock.Object });
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _mediator.Send(request));
@@ -64,7 +63,6 @@ public class MediatorAdditionalTests
         // Arrange
         var notification = new TestNotification();
 
-        // No setup for IEnumerable<INotificationHandler<TestNotification>> implies GetServices returns empty
         _serviceProviderMock
             .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
             .Returns(Enumerable.Empty<INotificationHandler<TestNotification>>());
@@ -78,8 +76,7 @@ public class MediatorAdditionalTests
     {
         // Arrange
         var notification = new TestNotification();
-        var cts = new CancellationTokenSource();
-        var token = cts.Token;
+        var token = new CancellationTokenSource().Token;
 
         var handlerMock1 = new Mock<INotificationHandler<TestNotification>>();
         var handlerMock2 = new Mock<INotificationHandler<TestNotification>>();
@@ -140,8 +137,8 @@ public class MediatorAdditionalTests
             .ReturnsAsync("Handled: Two");
 
         _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestRequest, string>)))
-            .Returns(handlerMock.Object);
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Returns(new[] { handlerMock.Object });
 
         // Act
         var r1 = await _mediator.Send(request1);
