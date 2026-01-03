@@ -24,8 +24,8 @@ public class MediatorTests
             .ReturnsAsync("Handled: Hello");
 
         _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestRequest, string>)))
-            .Returns(handlerMock.Object);
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Returns(new[] { handlerMock.Object });
 
         // Act
         var response = await _mediator.Send(request);
@@ -69,11 +69,11 @@ public class MediatorTests
         var request = new TestRequest { Message = "Hello" };
 
         _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IRequestHandler<TestRequest, string>)))
-            .Returns(null!);
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Returns(Array.Empty<IRequestHandler<TestRequest, string>>());
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _mediator.Send(request));
+        await Assert.ThrowsAsync<HandlerNotFoundException>(() => _mediator.Send(request));
     }
 }
 
