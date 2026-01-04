@@ -137,7 +137,7 @@ public class MediatorAdditionalTests
             .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
 
         // Act & Assert
-        await Assert.ThrowsAsync<InvalidOperationException>(() => _mediator.Publish(notification));
+        await Assert.ThrowsAsync<AggregateException>(() => _mediator.Publish(notification));
     }
 
     [Fact]
@@ -181,5 +181,146 @@ public class MediatorAdditionalTests
         Assert.Equal("Handled: Two", r2);
         handlerMock.Verify(h => h.Handle(request1, It.IsAny<CancellationToken>()), Times.Once);
         handlerMock.Verify(h => h.Handle(request2, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Publish_Sequential_StopOnFirstException_Should_Not_Invoke_Subsequent_Handlers()
+    {
+        var notification = new TestNotification();
+
+        var handlerMock1 = new Mock<INotificationHandler<TestNotification>>();
+        var handlerMock2 = new Mock<INotificationHandler<TestNotification>>();
+
+        handlerMock1
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("bad handler"));
+        handlerMock2
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
+            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
+
+        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        {
+            NotificationPublishMode = NotificationPublishMode.Sequential,
+            SequentialPublishErrorHandling = NotificationPublishErrorHandling.StopOnFirstException
+        });
+
+        await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Publish(notification));
+        handlerMock2.Verify(h => h.Handle(notification, It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task Publish_Sequential_ContinueAndAggregateExceptions_Should_Invoke_All_Handlers_And_Aggregate()
+    {
+        var notification = new TestNotification();
+
+        var handlerMock1 = new Mock<INotificationHandler<TestNotification>>();
+        var handlerMock2 = new Mock<INotificationHandler<TestNotification>>();
+        var handlerMock3 = new Mock<INotificationHandler<TestNotification>>();
+
+        handlerMock1
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("bad handler 1"));
+        handlerMock2
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(Task.CompletedTask);
+        handlerMock3
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InvalidOperationException("bad handler 2"));
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
+            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object, handlerMock3.Object });
+
+        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        {
+            NotificationPublishMode = NotificationPublishMode.Sequential,
+            SequentialPublishErrorHandling = NotificationPublishErrorHandling.ContinueAndAggregateExceptions
+        });
+
+        var ex = await Assert.ThrowsAsync<AggregateException>(() => mediator.Publish(notification));
+        Assert.Equal(2, ex.InnerExceptions.Count);
+        handlerMock2.Verify(h => h.Handle(notification, It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Publish_Parallel_AggregateExceptionsInParallel_False_Should_Throw_First_Observed_Exception()
+    {
+        var notification = new TestNotification();
+
+        var gate = new TaskCompletionSource();
+
+        var handler1 = new Mock<INotificationHandler<TestNotification>>();
+        handler1
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(async () =>
+            {
+                await Task.Yield();
+                throw new InvalidOperationException("fast fail");
+            });
+
+        var handler2 = new Mock<INotificationHandler<TestNotification>>();
+        handler2
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(async () =>
+            {
+                await gate.Task;
+                throw new InvalidOperationException("slow fail");
+            });
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
+            .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
+
+        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        {
+            NotificationPublishMode = NotificationPublishMode.Parallel,
+            AggregateExceptionsInParallel = false
+        });
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => mediator.Publish(notification));
+        Assert.Equal("fast fail", ex.Message);
+
+        gate.TrySetResult();
+    }
+
+    [Fact]
+    public async Task Publish_Parallel_AggregateExceptionsInParallel_True_Should_Aggregate()
+    {
+        var notification = new TestNotification();
+
+        var handler1 = new Mock<INotificationHandler<TestNotification>>();
+        var handler2 = new Mock<INotificationHandler<TestNotification>>();
+
+        handler1
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(async () =>
+            {
+                await Task.Yield();
+                throw new InvalidOperationException("bad handler 1");
+            });
+        handler2
+            .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
+            .Returns(async () =>
+            {
+                await Task.Yield();
+                throw new InvalidOperationException("bad handler 2");
+            });
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
+            .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
+
+        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        {
+            NotificationPublishMode = NotificationPublishMode.Parallel,
+            AggregateExceptionsInParallel = true
+        });
+
+        var ex = await Assert.ThrowsAsync<AggregateException>(() => mediator.Publish(notification));
+        Assert.NotEmpty(ex.InnerExceptions);
     }
 }
