@@ -5,7 +5,7 @@ using System.Reflection;
 namespace SimpleMediator;
 
 // Mediator implementation
-public class Mediator(IServiceProvider serviceProvider) : IMediator
+public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions options) : IMediator
 {
     // Per-TResponse send cache to avoid repeated reflection
     private static class SendCache<TResponse>
@@ -123,6 +123,16 @@ public class Mediator(IServiceProvider serviceProvider) : IMediator
         }
 
         if (handlers is null) return;
+
+        if (options.NotificationPublishMode == NotificationPublishMode.Sequential)
+        {
+            foreach (var handler in handlers)
+            {
+                await handler.Handle(notification, cancellationToken).ConfigureAwait(false);
+            }
+
+            return;
+        }
 
         var tasks = new List<Task>(capacity: 4);
         foreach (var handler in handlers)

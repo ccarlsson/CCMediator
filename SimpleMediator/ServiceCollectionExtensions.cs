@@ -14,7 +14,23 @@ public static class ServiceCollectionExtensions
     /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
     /// <returns>The same service collection instance to enable chaining.</returns>
     public static IServiceCollection AddSimpleMediator(this IServiceCollection services, params Assembly[] assemblies)
+        => services.AddSimpleMediator(static _ => { }, assemblies);
+
+    /// <summary>
+    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// </summary>
+    /// <param name="services">The service collection to register services into.</param>
+    /// <param name="configure">Configuration callback for mediator options.</param>
+    /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
+    /// <returns>The same service collection instance to enable chaining.</returns>
+    public static IServiceCollection AddSimpleMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
     {
+        var options = new SimpleMediatorOptions();
+        configure(options);
+
+        services.AddSingleton(options);
+
         // Register the mediator
         services.AddScoped<IMediator, Mediator>();
 
