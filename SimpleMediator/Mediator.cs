@@ -7,6 +7,10 @@ namespace SimpleMediator;
 // Mediator implementation
 public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions options) : IMediator
 {
+    public Mediator(IServiceProvider serviceProvider) : this(serviceProvider, new SimpleMediatorOptions())
+    {
+    }
+
     // Per-TResponse send cache to avoid repeated reflection
     private static class SendCache<TResponse>
     {
@@ -81,14 +85,14 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
 
         var handler = (IRequestHandler<TRequest, TResponse>)handlerObj;
 
-        IEnumerable<IPipelineBehavior<TRequest, TResponse>> behaviors;
+        IEnumerable<IPipelineBehavior<TRequest, TResponse>>? behaviors;
         try
         {
             behaviors = sp.GetServices<IPipelineBehavior<TRequest, TResponse>>();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new MediatorException($"Failed to resolve pipeline behaviors for request type '{typeof(TRequest)}'.", ex);
+            behaviors = null;
         }
 
         Func<Task<TResponse>> next = () => handler.Handle(request, cancellationToken);
@@ -126,9 +130,37 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
 
         if (options.NotificationPublishMode == NotificationPublishMode.Sequential)
         {
+            if (options.SequentialPublishErrorHandling == NotificationPublishErrorHandling.StopOnFirstException)
+            {
+                foreach (var handler in handlers)
+                {
+                    await handler.Handle(notification, cancellationToken).ConfigureAwait(false);
+                }
+
+                return;
+            }
+
+            var exceptions = new List<Exception>();
             foreach (var handler in handlers)
             {
-                await handler.Handle(notification, cancellationToken).ConfigureAwait(false);
+                try
+                {
+                    await handler.Handle(notification, cancellationToken).ConfigureAwait(false);
+                }
+                catch (Exception ex)
+                {
+                    exceptions.Add(ex);
+                }
+            }
+
+            if (exceptions.Count == 1)
+            {
+                throw exceptions[0];
+            }
+
+            if (exceptions.Count > 1)
+            {
+                throw new AggregateException(exceptions);
             }
 
             return;
@@ -140,6 +172,27 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
             tasks.Add(handler.Handle(notification, cancellationToken));
         }
         if (tasks.Count == 0) return;
-        await Task.WhenAll(tasks).ConfigureAwait(false);
+
+        if (options.AggregateExceptionsInParallel)
+        {
+            try
+            {
+                await Task.WhenAll(tasks).ConfigureAwait(false);
+            }
+            catch (Exception ex) when (ex is not AggregateException)
+            {
+                throw new AggregateException(ex);
+            }
+            return;
+        }
+
+        // Stop-on-first in parallel: observe tasks as they complete and throw on first failure.
+        // Remaining tasks will still run, but the caller gets the first observed exception.
+        while (tasks.Count > 0)
+        {
+            var completed = await Task.WhenAny(tasks).ConfigureAwait(false);
+            tasks.Remove(completed);
+            await completed.ConfigureAwait(false);
+        }
     }
 }
