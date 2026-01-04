@@ -7,6 +7,10 @@ namespace SimpleMediator;
 // Mediator implementation
 public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions options) : IMediator
 {
+    public Mediator(IServiceProvider serviceProvider) : this(serviceProvider, new SimpleMediatorOptions())
+    {
+    }
+
     // Per-TResponse send cache to avoid repeated reflection
     private static class SendCache<TResponse>
     {
@@ -49,7 +53,8 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
             System.Linq.Expressions.Expression.Convert(reqParam, requestType),
             ctParam);
 
-        var lambda = System.Linq.Expressions.Expression.Lambda<Func<IServiceProvider, object, CancellationToken, Task<TResponse>>>(
+        var lambda = System.Linq.Expressions.Expression.Lambda<Func<IServiceProvider, object, CancellationToken, Task<TResponse>>>
+            (
             callCore, spParam, reqParam, ctParam);
 
         return lambda.Compile();
@@ -81,14 +86,16 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
 
         var handler = (IRequestHandler<TRequest, TResponse>)handlerObj;
 
-        IEnumerable<IPipelineBehavior<TRequest, TResponse>> behaviors;
+        IEnumerable<IPipelineBehavior<TRequest, TResponse>>? behaviors;
         try
         {
+            // GetServices returns empty when not registered for the default DI container,
+            // but some IServiceProvider implementations may throw. Treat that as "no behaviors".
             behaviors = sp.GetServices<IPipelineBehavior<TRequest, TResponse>>();
         }
-        catch (Exception ex)
+        catch
         {
-            throw new MediatorException($"Failed to resolve pipeline behaviors for request type '{typeof(TRequest)}'.", ex);
+            behaviors = null;
         }
 
         Func<Task<TResponse>> next = () => handler.Handle(request, cancellationToken);
