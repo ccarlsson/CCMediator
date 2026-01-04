@@ -58,6 +58,22 @@ public class MediatorAdditionalTests
     }
 
     [Fact]
+    public async Task Send_Should_Wrap_Di_Resolution_Errors_In_MediatorException()
+    {
+        // Arrange
+        var request = new TestRequest { Message = "Hello" };
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
+            .Throws(new InvalidOperationException("di failed"));
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<MediatorException>(() => _mediator.Send(request));
+        Assert.IsType<InvalidOperationException>(ex.InnerException);
+        Assert.Equal("di failed", ex.InnerException!.Message);
+    }
+
+    [Fact]
     public async Task Publish_Should_Be_NoOp_When_No_Handlers()
     {
         // Arrange
@@ -122,6 +138,22 @@ public class MediatorAdditionalTests
 
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(() => _mediator.Publish(notification));
+    }
+
+    [Fact]
+    public async Task Publish_Should_Wrap_Di_Resolution_Errors_In_MediatorException()
+    {
+        // Arrange
+        var notification = new TestNotification();
+
+        _serviceProviderMock
+            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
+            .Throws(new InvalidOperationException("di failed"));
+
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<MediatorException>(() => _mediator.Publish(notification));
+        Assert.IsType<InvalidOperationException>(ex.InnerException);
+        Assert.Equal("di failed", ex.InnerException!.Message);
     }
 
     [Fact]
