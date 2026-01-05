@@ -139,15 +139,6 @@ public sealed class LoggingBehavior : IPipelineBehavior<Ping, string>
 }
 ```
 
-## Benchmarks
-
-Benchmarks are included in the `BenchmarkSuite1` project.
-To run them:
-
-```sh
-dotnet run -c Release -p BenchmarkSuite1
-```
-
 ## License
 
 MIT License. See [LICENSE.txt](LICENSE.txt) for details.
