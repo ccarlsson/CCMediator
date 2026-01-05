@@ -5,6 +5,13 @@ namespace CCMediator;
 /// </summary>
 public enum NotificationPublishErrorHandling
 {
+    /// <summary>
+    /// Stops when the first handler throws and propagates that exception.
+    /// </summary>
     StopOnFirstException = 0,
+
+    /// <summary>
+    /// Continues executing remaining handlers and throws an <see cref="AggregateException"/> at the end.
+    /// </summary>
     ContinueAndAggregateExceptions = 1
 }

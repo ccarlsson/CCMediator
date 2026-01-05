@@ -26,6 +26,7 @@ public class Mediator(IHandlerResolver resolver, CCMediatorOptions options) : IM
         .GetMethod(nameof(SendCore), BindingFlags.NonPublic | BindingFlags.Static)
         ?? throw new InvalidOperationException("Unable to locate Mediator.SendCore method.");
 
+    /// <inheritdoc />
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -115,6 +116,7 @@ public class Mediator(IHandlerResolver resolver, CCMediatorOptions options) : IM
         return next();
     }
 
+    /// <inheritdoc />
     public async Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default)
         where TNotification : INotification
     {
