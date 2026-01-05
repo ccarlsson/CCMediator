@@ -25,16 +25,40 @@ Find the `.nupkg` in `SimpleMediator/bin/Release/` and add it to your projects v
 
 ### Usage
 
-1. **Register with DI**
+#### Register with DI (no scanning / explicit registration)
+
+This is the default and avoids reflection-based assembly scanning.
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
 using SimpleMediator;
 
 var services = new ServiceCollection();
-services.AddSimpleMediator(typeof(Startup).Assembly); // Scan your assemblies for handlers
+services.AddSimpleMediator();
+
+// Register handlers explicitly
+services.AddTransient<IRequestHandler<Ping, string>, PingHandler>();
+services.AddTransient<INotificationHandler<MyNotification>, MyNotificationHandler>();
+
 var provider = services.BuildServiceProvider();
 ```
+
+#### Register with DI (opt-in scanning)
+
+If you prefer convenience over startup cost, you can explicitly enable scanning:
+
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using SimpleMediator;
+
+var services = new ServiceCollection();
+services.AddSimpleMediatorWithScanning(typeof(Startup).Assembly);
+var provider = services.BuildServiceProvider();
+```
+
+**Trade-offs**:
+- Explicit registration: fastest startup, no reflection scan, most predictable.
+- Scanning: fewer registrations to write, but uses reflection (`Assembly.GetTypes()` and `GetInterfaces()`) during startup.
 
 2. **Define a Request and Handler**
 

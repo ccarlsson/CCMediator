@@ -18,7 +18,7 @@ public class MediatorBenchmarks
     public void Setup()
     {
         var services = new ServiceCollection();
-        services.AddSimpleMediator(typeof(MediatorBenchmarks).Assembly);
+        services.AddSimpleMediatorWithScanning(typeof(MediatorBenchmarks).Assembly);
         _sp = services.BuildServiceProvider();
         _mediator = _sp.GetRequiredService<IMediator>();
     }

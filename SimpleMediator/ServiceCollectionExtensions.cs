@@ -7,24 +7,19 @@ namespace SimpleMediator;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the SimpleMediator core services and scans the specified assemblies
-    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// Registers the SimpleMediator core services.
+    /// 
+    /// This overload does not scan assemblies; handlers/pipeline behaviors must be registered explicitly.
     /// </summary>
-    /// <param name="services">The service collection to register services into.</param>
-    /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
-    /// <returns>The same service collection instance to enable chaining.</returns>
-    public static IServiceCollection AddSimpleMediator(this IServiceCollection services, params Assembly[] assemblies)
-        => services.AddSimpleMediator(static _ => { }, assemblies);
+    public static IServiceCollection AddSimpleMediator(this IServiceCollection services)
+        => services.AddSimpleMediator(static _ => { });
 
     /// <summary>
-    /// Registers the SimpleMediator core services and scans the specified assemblies
-    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// Registers the SimpleMediator core services.
+    /// 
+    /// This overload does not scan assemblies; handlers/pipeline behaviors must be registered explicitly.
     /// </summary>
-    /// <param name="services">The service collection to register services into.</param>
-    /// <param name="configure">Configuration callback for mediator options.</param>
-    /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
-    /// <returns>The same service collection instance to enable chaining.</returns>
-    public static IServiceCollection AddSimpleMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
+    public static IServiceCollection AddSimpleMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure)
     {
         var options = new SimpleMediatorOptions();
         configure(options);
@@ -33,6 +28,28 @@ public static class ServiceCollectionExtensions
 
         // Register the mediator
         services.AddScoped<IMediator, Mediator>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// 
+    /// This overload performs reflection-based scanning and is an explicit opt-in.
+    /// </summary>
+    public static IServiceCollection AddSimpleMediatorWithScanning(this IServiceCollection services, params Assembly[] assemblies)
+        => services.AddSimpleMediatorWithScanning(static _ => { }, assemblies);
+
+    /// <summary>
+    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// to register all <c>IRequestHandler&lt;,&gt;</c> and <c>INotificationHandler&lt;&gt;</c> implementations.
+    /// 
+    /// This overload performs reflection-based scanning and is an explicit opt-in.
+    /// </summary>
+    public static IServiceCollection AddSimpleMediatorWithScanning(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
+    {
+        services.AddSimpleMediator(configure);
 
         // Register all request handlers
         RegisterRequestHandlers(services, assemblies);

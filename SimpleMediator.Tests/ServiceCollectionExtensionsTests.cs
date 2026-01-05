@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Linq;
 using System.Reflection;
 using Xunit;
@@ -15,7 +14,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediator(Assembly.GetExecutingAssembly());
+        services.AddSimpleMediator();
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -25,13 +24,28 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddSimpleMediator_Should_Register_RequestHandlers()
+    public void AddSimpleMediator_Should_Not_Register_Handlers_By_Default()
     {
         // Arrange
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediator(Assembly.GetExecutingAssembly());
+        services.AddSimpleMediator();
+        var provider = services.BuildServiceProvider();
+
+        // Assert
+        Assert.Null(provider.GetService<IRequestHandler<TestRequest, string>>());
+        Assert.Empty(provider.GetServices<INotificationHandler<TestNotification>>());
+    }
+
+    [Fact]
+    public void AddSimpleMediatorWithScanning_Should_Register_RequestHandlers()
+    {
+        // Arrange
+        var services = new ServiceCollection();
+
+        // Act
+        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -41,13 +55,13 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddSimpleMediator_Should_Register_NotificationHandlers()
+    public void AddSimpleMediatorWithScanning_Should_Register_NotificationHandlers()
     {
         // Arrange
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediator(Assembly.GetExecutingAssembly());
+        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
         var provider = services.BuildServiceProvider();
 
         // Assert
