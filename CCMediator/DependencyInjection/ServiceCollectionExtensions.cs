@@ -62,7 +62,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     /// <remarks>
     /// This method performs reflection-based scanning (e.g. <see cref="Assembly.GetTypes"/>) and is an explicit opt-in.
-    /// For maximum startup performance and predictability, prefer <see cref="AddCCMediator(IServiceCollection, Action{SimpleMediatorOptions})"/> with explicit registrations.
+    /// For maximum startup performance and predictability, prefer <see cref="AddCCMediator(IServiceCollection, Action{CCMediatorOptions})"/> with explicit registrations.
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <param name="configure">Callback used to configure <see cref="CCMediatorOptions"/>.</param>
