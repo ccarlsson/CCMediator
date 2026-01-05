@@ -1,4 +1,6 @@
-﻿namespace SimpleMediator.Tests;
+﻿using SimpleMediator.Abstractions;
+
+namespace SimpleMediator.Tests;
 
 // Test request and notification classes
 public class TestRequest : IRequest<string>

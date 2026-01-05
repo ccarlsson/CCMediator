@@ -1,7 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using SimpleMediator.Abstractions;
+using SimpleMediator.Configuration;
+using SimpleMediator.Implementation;
 using System.Reflection;
 
-namespace SimpleMediator;
+namespace SimpleMediator.DependencyInjection;
 
 /// <summary>
 /// Extension methods for registering SimpleMediator services with Microsoft.Extensions.DependencyInjection.

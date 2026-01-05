@@ -1,4 +1,4 @@
-namespace SimpleMediator;
+namespace SimpleMediator.Exceptions;
 
 /// <summary>
 /// Represents errors that occur within the mediator infrastructure (e.g., handler resolution,

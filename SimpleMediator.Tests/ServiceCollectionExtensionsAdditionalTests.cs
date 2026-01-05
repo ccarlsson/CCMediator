@@ -1,4 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
+using SimpleMediator.Abstractions;
+using SimpleMediator.DependencyInjection;
 using System.Reflection;
 using Xunit;
 

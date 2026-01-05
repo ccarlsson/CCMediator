@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator;
+﻿namespace SimpleMediator.Abstractions;
 
 /// <summary>
 /// Handles a request and produces a response.

@@ -1,4 +1,4 @@
-namespace SimpleMediator;
+namespace SimpleMediator.Abstractions;
 
 /// <summary>
 /// Defines a middleware component that wraps request handling.

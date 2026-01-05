@@ -1,4 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
+using SimpleMediator.Abstractions;
+using SimpleMediator.Exceptions;
+using SimpleMediator.Implementation;
 
 namespace SimpleMediator.Tests;
 

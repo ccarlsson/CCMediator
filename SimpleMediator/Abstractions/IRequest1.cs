@@ -1,4 +1,6 @@
-﻿namespace SimpleMediator;
+﻿namespace SimpleMediator.Abstractions;
+
+using SimpleMediator.Primitives;
 
 /// <summary>
 /// Marker interface for a request message that does not return a custom response.

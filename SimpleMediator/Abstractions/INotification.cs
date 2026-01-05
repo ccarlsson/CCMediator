@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator;
+﻿namespace SimpleMediator.Abstractions;
 
 /// <summary>
 /// Marker interface for a notification message that is published to multiple handlers.

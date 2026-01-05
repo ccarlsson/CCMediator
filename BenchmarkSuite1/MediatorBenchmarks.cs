@@ -3,7 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator;
+using SimpleMediator.Abstractions;
+using SimpleMediator.DependencyInjection;
 
 namespace Benchmarks;
 

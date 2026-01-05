@@ -1,6 +1,6 @@
 using System;
 
-namespace SimpleMediator;
+namespace SimpleMediator.Exceptions;
 
 /// <summary>
 /// Thrown when no handler is registered for a given request/response pair.

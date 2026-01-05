@@ -1,4 +1,8 @@
 using Moq;
+using SimpleMediator.Abstractions;
+using SimpleMediator.Configuration;
+using SimpleMediator.Exceptions;
+using SimpleMediator.Implementation;
 using Xunit;
 
 namespace SimpleMediator.Tests;

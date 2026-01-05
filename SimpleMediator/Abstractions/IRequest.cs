@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator;
+﻿namespace SimpleMediator.Abstractions;
 
 /// <summary>
 /// Marker interface for a request message that returns a response.

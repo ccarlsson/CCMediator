@@ -1,4 +1,4 @@
-namespace SimpleMediator;
+namespace SimpleMediator.Configuration;
 
 /// <summary>
 /// Controls how notification handlers are executed.

@@ -1,4 +1,4 @@
-namespace SimpleMediator;
+namespace SimpleMediator.Configuration;
 
 /// <summary>
 /// Options controlling mediator behavior.
