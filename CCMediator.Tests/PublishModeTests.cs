@@ -1,5 +1,4 @@
-using CCMediator.Abstractions;
-using CCMediator.Configuration;
+using CCMediator;
 using CCMediator.Implementation;
 using Moq;
 using Xunit;

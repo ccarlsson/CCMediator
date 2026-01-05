@@ -1,4 +1,4 @@
-namespace CCMediator.Configuration;
+namespace CCMediator;
 
 /// <summary>
 /// Options controlling mediator behavior.

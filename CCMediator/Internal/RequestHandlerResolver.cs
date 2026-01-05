@@ -1,6 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.Exceptions;
 using System.Linq;
 
 namespace CCMediator.Internal;

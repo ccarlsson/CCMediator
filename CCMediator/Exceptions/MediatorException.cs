@@ -1,4 +1,4 @@
-namespace CCMediator.Exceptions;
+namespace CCMediator;
 
 /// <summary>
 /// Represents errors that occur within the mediator infrastructure (e.g., handler resolution,

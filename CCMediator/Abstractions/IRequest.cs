@@ -1,4 +1,4 @@
-﻿namespace CCMediator.Abstractions;
+﻿namespace CCMediator;
 
 /// <summary>
 /// Marker interface for a request message that returns a response.

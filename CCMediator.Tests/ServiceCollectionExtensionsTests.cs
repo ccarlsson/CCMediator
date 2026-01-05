@@ -1,10 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.DependencyInjection;
-using CCMediator.Implementation;
 using System.Linq;
 using System.Reflection;
 using Xunit;
+using CCMediator;
+using CCMediator.Implementation;
 
 namespace CCMediator.Tests;
 
@@ -17,7 +16,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediator();
+        services.AddCCMediator();
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -33,7 +32,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediator();
+        services.AddCCMediator();
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -48,7 +47,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
+        services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly());
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -64,7 +63,7 @@ public class ServiceCollectionExtensionsTests
         var services = new ServiceCollection();
 
         // Act
-        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
+        services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly());
         var provider = services.BuildServiceProvider();
 
         // Assert

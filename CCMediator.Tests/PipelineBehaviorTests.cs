@@ -1,8 +1,7 @@
 using Moq;
-using CCMediator.Abstractions;
-using CCMediator.Configuration;
-using CCMediator.Implementation;
 using Xunit;
+using CCMediator;
+using CCMediator.Implementation;
 
 namespace CCMediator.Tests;
 

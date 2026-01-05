@@ -1,4 +1,4 @@
-﻿namespace CCMediator.Abstractions;
+﻿namespace CCMediator;
 
 /// <summary>
 /// Handles a notification.

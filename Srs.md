@@ -72,7 +72,7 @@ CCMediator is a library consumed by .NET 10 applications. It integrates with the
 - Request/response modification  
 
 ### 3.4 Dependency Injection Integration  
-- Extension method: `AddSimpleMediator`  
+- Extension method: `AddCCMediator`  
 - Automatic handler registration  
 - Manual registration supported  
 

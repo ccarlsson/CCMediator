@@ -1,4 +1,4 @@
-﻿namespace CCMediator.Abstractions;
+﻿namespace CCMediator;
 
 /// <summary>
 /// Handles a request and produces a response.

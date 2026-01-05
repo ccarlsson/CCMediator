@@ -1,4 +1,4 @@
-﻿using CCMediator.Abstractions;
+﻿using CCMediator;
 
 namespace CCMediator.Tests;
 

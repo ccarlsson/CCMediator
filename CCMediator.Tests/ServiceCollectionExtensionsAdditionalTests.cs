@@ -1,8 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.DependencyInjection;
 using System.Reflection;
 using Xunit;
+using CCMediator;
 
 namespace CCMediator.Tests;
 
@@ -21,7 +20,7 @@ public class ServiceCollectionExtensionsAdditionalTests
         var services = new ServiceCollection();
 
         // Act: include current test assembly and the SimpleMediator assembly to ensure scanning across multiple assemblies doesn't fail
-        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly(), typeof(IMediator).Assembly);
+        services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly(), typeof(IMediator).Assembly);
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -31,7 +30,7 @@ public class ServiceCollectionExtensionsAdditionalTests
         // Also ensure that the handlers from this assembly are registered when present
         // Register one handler locally via an additional service collection to simulate cross-assembly types
         services = new ServiceCollection();
-        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
+        services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly());
         services.AddTransient<INotificationHandler<DummyNotification>, DummyNotificationHandler>();
         provider = services.BuildServiceProvider();
 

@@ -1,29 +1,27 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.Configuration;
-using CCMediator.Implementation;
 using System.Reflection;
+using CCMediator.Implementation;
 
-namespace CCMediator.DependencyInjection;
+namespace CCMediator;
 
 /// <summary>
-/// Extension methods for registering SimpleMediator services with Microsoft.Extensions.DependencyInjection.
+/// Extension methods for registering CCMediator services with Microsoft.Extensions.DependencyInjection.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers the SimpleMediator core services.
+    /// Registers the CCMediator core services.
     /// </summary>
     /// <remarks>
     /// This overload does not scan assemblies; handlers and pipeline behaviors must be registered explicitly.
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddSimpleMediator(this IServiceCollection services)
-        => services.AddSimpleMediator(static _ => { });
+    public static IServiceCollection AddCCMediator(this IServiceCollection services)
+        => services.AddCCMediator(static _ => { });
 
     /// <summary>
-    /// Registers the SimpleMediator core services.
+    /// Registers the CCMediator core services.
     /// </summary>
     /// <remarks>
     /// This overload does not scan assemblies; handlers and pipeline behaviors must be registered explicitly.
@@ -31,7 +29,7 @@ public static class ServiceCollectionExtensions
     /// <param name="services">The service collection.</param>
     /// <param name="configure">Callback used to configure <see cref="SimpleMediatorOptions"/>.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddSimpleMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure)
+    public static IServiceCollection AddCCMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure)
     {
         var options = new SimpleMediatorOptions();
         configure(options);
@@ -45,34 +43,34 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// Registers the CCMediator core services and scans the specified assemblies
     /// to register all <see cref="IRequestHandler{TRequest, TResponse}"/> and <see cref="INotificationHandler{TNotification}"/> implementations.
     /// </summary>
     /// <remarks>
     /// This method performs reflection-based scanning (e.g. <see cref="Assembly.GetTypes"/>) and is an explicit opt-in.
-    /// For maximum startup performance and predictability, prefer <see cref="AddSimpleMediator(IServiceCollection)"/> with explicit registrations.
+    /// For maximum startup performance and predictability, prefer <see cref="AddCCMediator(IServiceCollection)"/> with explicit registrations.
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddSimpleMediatorWithScanning(this IServiceCollection services, params Assembly[] assemblies)
-        => services.AddSimpleMediatorWithScanning(static _ => { }, assemblies);
+    public static IServiceCollection AddCCMediatorWithScanning(this IServiceCollection services, params Assembly[] assemblies)
+        => services.AddCCMediatorWithScanning(static _ => { }, assemblies);
 
     /// <summary>
-    /// Registers the SimpleMediator core services and scans the specified assemblies
+    /// Registers the CCMediator core services and scans the specified assemblies
     /// to register all <see cref="IRequestHandler{TRequest, TResponse}"/> and <see cref="INotificationHandler{TNotification}"/> implementations.
     /// </summary>
     /// <remarks>
     /// This method performs reflection-based scanning (e.g. <see cref="Assembly.GetTypes"/>) and is an explicit opt-in.
-    /// For maximum startup performance and predictability, prefer <see cref="AddSimpleMediator(IServiceCollection, Action{SimpleMediatorOptions})"/> with explicit registrations.
+    /// For maximum startup performance and predictability, prefer <see cref="AddCCMediator(IServiceCollection, Action{SimpleMediatorOptions})"/> with explicit registrations.
     /// </remarks>
     /// <param name="services">The service collection.</param>
     /// <param name="configure">Callback used to configure <see cref="SimpleMediatorOptions"/>.</param>
     /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddSimpleMediatorWithScanning(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
+    public static IServiceCollection AddCCMediatorWithScanning(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
     {
-        services.AddSimpleMediator(configure);
+        services.AddCCMediator(configure);
 
         // Register all request handlers
         RegisterRequestHandlers(services, assemblies);

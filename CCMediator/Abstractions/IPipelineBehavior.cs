@@ -1,4 +1,4 @@
-namespace CCMediator.Abstractions;
+namespace CCMediator;
 
 /// <summary>
 /// Defines a middleware component that wraps request handling.

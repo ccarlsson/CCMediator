@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.Exceptions;
+using Xunit;
+using CCMediator;
 using CCMediator.Implementation;
 
 namespace CCMediator.Tests;

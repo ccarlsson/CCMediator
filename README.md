@@ -34,7 +34,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CCMediator;
 
 var services = new ServiceCollection();
-services.AddSimpleMediator();
+services.AddCCMediator();
 
 // Register handlers explicitly
 services.AddTransient<IRequestHandler<Ping, string>, PingHandler>();
@@ -52,7 +52,7 @@ using Microsoft.Extensions.DependencyInjection;
 using CCMediator;
 
 var services = new ServiceCollection();
-services.AddSimpleMediatorWithScanning(typeof(Startup).Assembly);
+services.AddCCMediatorWithScanning(typeof(Startup).Assembly);
 var provider = services.BuildServiceProvider();
 ```
 

@@ -1,6 +1,6 @@
 using System;
 
-namespace CCMediator.Exceptions;
+namespace CCMediator;
 
 /// <summary>
 /// Thrown when no handler is registered for a given request/response pair.

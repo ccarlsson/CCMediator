@@ -3,8 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Microsoft.Extensions.DependencyInjection;
-using CCMediator.Abstractions;
-using CCMediator.DependencyInjection;
+using CCMediator;
 
 namespace Benchmarks;
 
@@ -19,7 +18,7 @@ public class MediatorBenchmarks
     public void Setup()
     {
         var services = new ServiceCollection();
-        services.AddSimpleMediatorWithScanning(typeof(MediatorBenchmarks).Assembly);
+        services.AddCCMediatorWithScanning(typeof(MediatorBenchmarks).Assembly);
         _sp = services.BuildServiceProvider();
         _mediator = _sp.GetRequiredService<IMediator>();
     }

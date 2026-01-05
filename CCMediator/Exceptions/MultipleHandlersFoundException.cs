@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CCMediator.Exceptions;
+namespace CCMediator;
 
 /// <summary>
 /// Thrown when more than one handler is registered for a given request/response pair.

@@ -1,4 +1,4 @@
-namespace CCMediator.Configuration;
+namespace CCMediator;
 
 /// <summary>
 /// Controls how notification handlers are executed.
