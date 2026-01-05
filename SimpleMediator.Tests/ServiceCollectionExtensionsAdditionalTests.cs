@@ -13,13 +13,13 @@ public class ServiceCollectionExtensionsAdditionalTests
     }
 
     [Fact]
-    public void AddSimpleMediator_Should_Scan_Multiple_Assemblies()
+    public void AddSimpleMediatorWithScanning_Should_Scan_Multiple_Assemblies()
     {
         // Arrange
         var services = new ServiceCollection();
 
         // Act: include current test assembly and the SimpleMediator assembly to ensure scanning across multiple assemblies doesn't fail
-        services.AddSimpleMediator(Assembly.GetExecutingAssembly(), typeof(IMediator).Assembly);
+        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly(), typeof(IMediator).Assembly);
         var provider = services.BuildServiceProvider();
 
         // Assert
@@ -29,7 +29,7 @@ public class ServiceCollectionExtensionsAdditionalTests
         // Also ensure that the handlers from this assembly are registered when present
         // Register one handler locally via an additional service collection to simulate cross-assembly types
         services = new ServiceCollection();
-        services.AddSimpleMediator(Assembly.GetExecutingAssembly());
+        services.AddSimpleMediatorWithScanning(Assembly.GetExecutingAssembly());
         services.AddTransient<INotificationHandler<DummyNotification>, DummyNotificationHandler>();
         provider = services.BuildServiceProvider();
 
