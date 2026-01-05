@@ -1,6 +1,6 @@
-﻿using SimpleMediator.Abstractions;
+﻿using CCMediator.Abstractions;
 
-namespace SimpleMediator.Tests;
+namespace CCMediator.Tests;
 
 // Test request and notification classes
 public class TestRequest : IRequest<string>

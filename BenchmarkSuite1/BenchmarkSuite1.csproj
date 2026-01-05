@@ -12,6 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SimpleMediator\SimpleMediator.csproj" />
+    <ProjectReference Include="..\CCMediator\CCMediator.csproj" />
   </ItemGroup>
 </Project>

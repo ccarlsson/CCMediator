@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator.Abstractions;
-using SimpleMediator.Exceptions;
+using CCMediator.Abstractions;
+using CCMediator.Exceptions;
 using System.Linq;
 
-namespace SimpleMediator.Internal;
+namespace CCMediator.Internal;
 
 /// <summary>
 /// Resolves request handlers while enforcing the "exactly one" constraint.

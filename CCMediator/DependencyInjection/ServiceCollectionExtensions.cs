@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator.Abstractions;
-using SimpleMediator.Configuration;
-using SimpleMediator.Implementation;
+using CCMediator.Abstractions;
+using CCMediator.Configuration;
+using CCMediator.Implementation;
 using System.Reflection;
 
-namespace SimpleMediator.DependencyInjection;
+namespace CCMediator.DependencyInjection;
 
 /// <summary>
 /// Extension methods for registering SimpleMediator services with Microsoft.Extensions.DependencyInjection.

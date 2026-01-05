@@ -1,13 +1,13 @@
 ﻿# Software Requirements Specification  
-## SimpleMediator — A Lightweight Mediator Library for .NET 10
+## CCMediator — A Lightweight Mediator Library for .NET 10
 
 ## 1. Introduction
 
 ### 1.1 Purpose  
-The purpose of **SimpleMediator** is to provide a minimal, easy‑to‑understand alternative to MediatR for .NET 10 applications. It emphasizes simplicity, predictability, and transparent message flow, making it ideal for teaching and small‑to‑medium projects.
+The purpose of **CCMediator** is to provide a minimal, easy‑to‑understand alternative to MediatR for .NET 10 applications. It emphasizes simplicity, predictability, and transparent message flow, making it ideal for teaching and small‑to‑medium projects.
 
 ### 1.2 Scope  
-SimpleMediator will support:
+CCMediator will support:
 
 - Request/Response messaging  
 - Notification broadcasting  
@@ -15,7 +15,7 @@ SimpleMediator will support:
 - Dependency injection integration  
 - Strongly typed generics  
 
-SimpleMediator will *not* include:
+CCMediator will *not* include:
 
 - Cross‑process messaging  
 - Retry policies  
@@ -34,7 +34,7 @@ SimpleMediator will *not* include:
 ## 2. Overall Description
 
 ### 2.1 Product Perspective  
-SimpleMediator is a library consumed by .NET 10 applications. It integrates with the built‑in DI container and exposes a single `IMediator` interface.
+CCMediator is a library consumed by .NET 10 applications. It integrates with the built‑in DI container and exposes a single `IMediator` interface.
 
 ### 2.2 Product Features  
 - Send requests  

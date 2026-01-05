@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator.Abstractions;
+﻿namespace CCMediator.Abstractions;
 
 /// <summary>
 /// Defines the mediator API for dispatching requests and publishing notifications.

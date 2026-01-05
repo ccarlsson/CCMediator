@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator.Abstractions;
-using SimpleMediator.Exceptions;
-using SimpleMediator.Implementation;
+using CCMediator.Abstractions;
+using CCMediator.Exceptions;
+using CCMediator.Implementation;
 
-namespace SimpleMediator.Tests;
+namespace CCMediator.Tests;
 
 public class MediatorSingleHandlerEnforcementTests
 {

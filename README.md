@@ -1,4 +1,4 @@
-# SimpleMediator
+# CCMediator
 
 A lightweight, dependency-injection-friendly mediator library for .NET 10, inspired by MediatR.
 Provides simple request/response and notification handling with minimal dependencies.
@@ -21,7 +21,7 @@ Build and pack the library:
 dotnet pack -c Release
 ```
 
-Find the `.nupkg` in `SimpleMediator/bin/Release/` and add it to your projects via a local NuGet source or publish to NuGet.org.
+Find the `.nupkg` in `CCMediator/bin/Release/` and add it to your projects via a local NuGet source or publish to NuGet.org.
 
 ### Usage
 
@@ -31,7 +31,7 @@ This is the default and avoids reflection-based assembly scanning.
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator;
+using CCMediator;
 
 var services = new ServiceCollection();
 services.AddSimpleMediator();
@@ -49,7 +49,7 @@ If you prefer convenience over startup cost, you can explicitly enable scanning:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator;
+using CCMediator;
 
 var services = new ServiceCollection();
 services.AddSimpleMediatorWithScanning(typeof(Startup).Assembly);

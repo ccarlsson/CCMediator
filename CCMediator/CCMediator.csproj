@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
-		<PackageId>SimpleMediator</PackageId>
+		<PackageId>CCMediator</PackageId>
 		<Version>1.0.2</Version>
 		<Authors>Christer Carlsson</Authors>
 		<Description>A simple Mediator implementation</Description>
@@ -10,7 +10,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-		<Title>Simple Mediator</Title>
+		<Title>CC Mediator</Title>
 		<LangVersion>14.0</LangVersion>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>

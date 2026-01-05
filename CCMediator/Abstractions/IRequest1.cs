@@ -1,6 +1,6 @@
-﻿namespace SimpleMediator.Abstractions;
+﻿namespace CCMediator.Abstractions;
 
-using SimpleMediator.Primitives;
+using CCMediator.Primitives;
 
 /// <summary>
 /// Marker interface for a request message that does not return a custom response.

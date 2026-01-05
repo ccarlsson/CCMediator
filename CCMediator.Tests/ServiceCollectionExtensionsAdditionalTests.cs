@@ -1,10 +1,10 @@
 using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator.Abstractions;
-using SimpleMediator.DependencyInjection;
+using CCMediator.Abstractions;
+using CCMediator.DependencyInjection;
 using System.Reflection;
 using Xunit;
 
-namespace SimpleMediator.Tests;
+namespace CCMediator.Tests;
 
 public class ServiceCollectionExtensionsAdditionalTests
 {

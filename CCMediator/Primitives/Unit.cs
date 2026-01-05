@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator.Primitives;
+﻿namespace CCMediator.Primitives;
 
 /// <summary>
 /// Represents a unit (void) value for request/response flows that do not return data.

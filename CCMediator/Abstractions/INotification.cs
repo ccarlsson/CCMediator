@@ -1,4 +1,4 @@
-﻿namespace SimpleMediator.Abstractions;
+﻿namespace CCMediator.Abstractions;
 
 /// <summary>
 /// Marker interface for a notification message that is published to multiple handlers.

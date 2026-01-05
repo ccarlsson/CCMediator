@@ -1,11 +1,11 @@
 using Moq;
-using SimpleMediator.Abstractions;
-using SimpleMediator.Configuration;
-using SimpleMediator.Exceptions;
-using SimpleMediator.Implementation;
+using CCMediator.Abstractions;
+using CCMediator.Configuration;
+using CCMediator.Exceptions;
+using CCMediator.Implementation;
 using Xunit;
 
-namespace SimpleMediator.Tests;
+namespace CCMediator.Tests;
 
 public class MediatorAdditionalTests
 {

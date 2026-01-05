@@ -1,4 +1,4 @@
-namespace SimpleMediator.Configuration;
+namespace CCMediator.Configuration;
 
 /// <summary>
 /// Controls how exceptions from notification handlers are handled during sequential publishing.

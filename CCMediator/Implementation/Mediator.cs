@@ -1,12 +1,12 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using SimpleMediator.Abstractions;
-using SimpleMediator.Configuration;
-using SimpleMediator.Exceptions;
-using SimpleMediator.Internal;
+using CCMediator.Abstractions;
+using CCMediator.Configuration;
+using CCMediator.Exceptions;
+using CCMediator.Internal;
 using System.Collections.Concurrent;
 using System.Reflection;
 
-namespace SimpleMediator.Implementation;
+namespace CCMediator.Implementation;
 
 /// <summary>
 /// Default <see cref="IMediator"/> implementation.
