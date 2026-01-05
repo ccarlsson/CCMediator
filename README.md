@@ -1,14 +1,15 @@
 # CCMediator
 
 A lightweight, dependency-injection-friendly mediator library for .NET 10, inspired by MediatR.
-Provides simple request/response and notification handling with minimal dependencies.
+Provides request/response and notification handling with minimal dependencies.
 
 ## Features
 
 - **Request/Response**: Send requests and receive responses via strongly-typed handlers.
-- **Notifications**: Publish notifications to multiple handlers.
-- **Dependency Injection**: Seamless integration with `Microsoft.Extensions.DependencyInjection`.
-- **No Reflection at Runtime**: Optimized for performance using compiled delegates.
+- **Notifications**: Publish notifications to multiple handlers (sequential or parallel).
+- **Pipeline behaviors**: Add middleware around request handling.
+- **Dependency Injection**: Integration with `Microsoft.Extensions.DependencyInjection`.
+- **Fast dispatch**: Per-request-type cached dispatch using compiled delegates (no per-call reflection).
 - **.NET 10**: Modern C# and .NET features.
 
 ## Getting Started
@@ -60,7 +61,7 @@ var provider = services.BuildServiceProvider();
 - Explicit registration: fastest startup, no reflection scan, most predictable.
 - Scanning: fewer registrations to write, but uses reflection (`Assembly.GetTypes()` and `GetInterfaces()`) during startup.
 
-2. **Define a Request and Handler**
+#### Define a request and handler
 
 ```csharp
 public record Ping(string Message) : IRequest<string>;
@@ -72,14 +73,14 @@ public class PingHandler : IRequestHandler<Ping, string>
 }
 ```
 
-3. **Send a Request**
+#### Send a request
 
 ```csharp
 var mediator = provider.GetRequiredService<IMediator>();
-string response = await mediator.Send(new Ping("Hello"));
+var response = await mediator.Send(new Ping("Hello"));
 ```
 
-4. **Publish a Notification**
+#### Define and publish a notification
 
 ```csharp
 public record MyNotification(string Info) : INotification;
@@ -95,6 +96,47 @@ public class MyNotificationHandler : INotificationHandler<MyNotification>
 
 // Usage:
 await mediator.Publish(new MyNotification("Something happened!"));
+```
+
+## Configuration
+
+You can configure publishing behavior via `SimpleMediatorOptions`:
+
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using CCMediator;
+
+var services = new ServiceCollection();
+
+services.AddCCMediator(options =>
+{
+    options.NotificationPublishMode = NotificationPublishMode.Sequential;
+    options.SequentialPublishErrorHandling = NotificationPublishErrorHandling.ContinueAndAggregateExceptions;
+
+    // For parallel mode:
+    // options.NotificationPublishMode = NotificationPublishMode.Parallel;
+    // options.AggregateExceptionsInParallel = true;
+});
+```
+
+## Pipeline behaviors
+
+Register `IPipelineBehavior<TRequest,TResponse>` to wrap request handling.
+Execution order matches DI registration order.
+
+```csharp
+services.AddTransient<IPipelineBehavior<Ping, string>, LoggingBehavior>();
+
+public sealed class LoggingBehavior : IPipelineBehavior<Ping, string>
+{
+    public async Task<string> Handle(Ping request, Func<Task<string>> next, CancellationToken cancellationToken)
+    {
+        Console.WriteLine("Before");
+        var result = await next();
+        Console.WriteLine("After");
+        return result;
+    }
+}
 ```
 
 ## Benchmarks
