@@ -16,8 +16,8 @@ jobs:
           dotnet-version: |
             10.0.x
       - name: Restore
-        run: dotnet restore SimpleMediator.sln
+        run: dotnet restore CCMediator.sln
       - name: Build
-        run: dotnet build SimpleMediator.sln --configuration Release --no-restore
+        run: dotnet build CCMediator.sln --configuration Release --no-restore
       - name: Test
-        run: dotnet test SimpleMediator.sln --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx
+        run: dotnet test CCMediator.sln --configuration Release --no-build --collect:"XPlat Code Coverage" --logger trx
