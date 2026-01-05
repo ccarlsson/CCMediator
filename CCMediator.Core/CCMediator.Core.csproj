@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <PackageId>CCMediator</PackageId>
+    <PackageId>CCMediator.Core</PackageId>
     <Version>1.1.0</Version>
     <Authors>Christer Carlsson</Authors>
-    <Description>A simple Mediator implementation</Description>
-    <PackageTags>mediator;simple;cqrs</PackageTags>
+    <Description>Core abstractions and implementation for CCMediator</Description>
+    <PackageTags>mediator;simple;cqrs;core</PackageTags>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
