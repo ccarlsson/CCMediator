@@ -13,7 +13,7 @@ public class PublishModeTests
         var events = new List<string>();
 
         var sp = new Mock<IServiceProvider>();
-        var options = new SimpleMediatorOptions { NotificationPublishMode = NotificationPublishMode.Sequential };
+        var options = new CCMediatorOptions { NotificationPublishMode = NotificationPublishMode.Sequential };
         var mediator = new Mediator(sp.Object, options);
 
         var notification = new TestNotification();
@@ -48,7 +48,7 @@ public class PublishModeTests
     public async Task Publish_ParallelMode_Should_Invoke_All_Handlers()
     {
         var sp = new Mock<IServiceProvider>();
-        var options = new SimpleMediatorOptions { NotificationPublishMode = NotificationPublishMode.Parallel };
+        var options = new CCMediatorOptions { NotificationPublishMode = NotificationPublishMode.Parallel };
         var mediator = new Mediator(sp.Object, options);
 
         var notification = new TestNotification();

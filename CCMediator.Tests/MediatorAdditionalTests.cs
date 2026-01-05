@@ -13,7 +13,7 @@ public class MediatorAdditionalTests
     public MediatorAdditionalTests()
     {
         _serviceProviderMock = new Mock<IServiceProvider>();
-        _mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions());
+        _mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions());
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class MediatorAdditionalTests
             .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
             .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Sequential,
             SequentialPublishErrorHandling = NotificationPublishErrorHandling.StopOnFirstException
@@ -237,7 +237,7 @@ public class MediatorAdditionalTests
             .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
             .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object, handlerMock3.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Sequential,
             SequentialPublishErrorHandling = NotificationPublishErrorHandling.ContinueAndAggregateExceptions
@@ -277,7 +277,7 @@ public class MediatorAdditionalTests
             .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
             .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Parallel,
             AggregateExceptionsInParallel = false
@@ -316,7 +316,7 @@ public class MediatorAdditionalTests
             .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
             .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions
+        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Parallel,
             AggregateExceptionsInParallel = true

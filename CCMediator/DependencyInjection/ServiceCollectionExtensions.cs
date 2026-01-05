@@ -27,11 +27,11 @@ public static class ServiceCollectionExtensions
     /// This overload does not scan assemblies; handlers and pipeline behaviors must be registered explicitly.
     /// </remarks>
     /// <param name="services">The service collection.</param>
-    /// <param name="configure">Callback used to configure <see cref="SimpleMediatorOptions"/>.</param>
+    /// <param name="configure">Callback used to configure <see cref="CCMediatorOptions"/>.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddCCMediator(this IServiceCollection services, Action<SimpleMediatorOptions> configure)
+    public static IServiceCollection AddCCMediator(this IServiceCollection services, Action<CCMediatorOptions> configure)
     {
-        var options = new SimpleMediatorOptions();
+        var options = new CCMediatorOptions();
         configure(options);
 
         services.AddSingleton(options);
@@ -65,10 +65,10 @@ public static class ServiceCollectionExtensions
     /// For maximum startup performance and predictability, prefer <see cref="AddCCMediator(IServiceCollection, Action{SimpleMediatorOptions})"/> with explicit registrations.
     /// </remarks>
     /// <param name="services">The service collection.</param>
-    /// <param name="configure">Callback used to configure <see cref="SimpleMediatorOptions"/>.</param>
+    /// <param name="configure">Callback used to configure <see cref="CCMediatorOptions"/>.</param>
     /// <param name="assemblies">Assemblies to scan for handler implementations.</param>
     /// <returns>The same service collection instance.</returns>
-    public static IServiceCollection AddCCMediatorWithScanning(this IServiceCollection services, Action<SimpleMediatorOptions> configure, params Assembly[] assemblies)
+    public static IServiceCollection AddCCMediatorWithScanning(this IServiceCollection services, Action<CCMediatorOptions> configure, params Assembly[] assemblies)
     {
         services.AddCCMediator(configure);
 

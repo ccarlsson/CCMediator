@@ -8,13 +8,13 @@ namespace CCMediator.Implementation;
 /// <summary>
 /// Default <see cref="IMediator"/> implementation.
 /// </summary>
-public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions options) : IMediator
+public class Mediator(IServiceProvider serviceProvider, CCMediatorOptions options) : IMediator
 {
     /// <summary>
     /// Initializes a new <see cref="Mediator"/> with default options.
     /// </summary>
     /// <param name="serviceProvider">The service provider used to resolve handlers and behaviors.</param>
-    public Mediator(IServiceProvider serviceProvider) : this(serviceProvider, new SimpleMediatorOptions())
+    public Mediator(IServiceProvider serviceProvider) : this(serviceProvider, new CCMediatorOptions())
     {
     }
 

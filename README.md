@@ -100,7 +100,7 @@ await mediator.Publish(new MyNotification("Something happened!"));
 
 ## Configuration
 
-You can configure publishing behavior via `SimpleMediatorOptions`:
+You can configure publishing behavior via `CCMediatorOptions`:
 
 ```csharp
 using Microsoft.Extensions.DependencyInjection;

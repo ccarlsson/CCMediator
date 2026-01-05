@@ -3,7 +3,7 @@ namespace CCMediator;
 /// <summary>
 /// Options controlling mediator behavior.
 /// </summary>
-public sealed class SimpleMediatorOptions
+public sealed class CCMediatorOptions
 {
     /// <summary>
     /// Gets or sets how notifications are published.

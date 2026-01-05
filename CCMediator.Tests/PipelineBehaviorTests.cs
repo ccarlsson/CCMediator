@@ -13,7 +13,7 @@ public class PipelineBehaviorTests
     public PipelineBehaviorTests()
     {
         _serviceProviderMock = new Mock<IServiceProvider>();
-        _mediator = new Mediator(_serviceProviderMock.Object, new SimpleMediatorOptions());
+        _mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions());
     }
 
     [Fact]
