@@ -24,7 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CCMediator\CCMediator.csproj" />
+    <ProjectReference Include="..\CCMediator.Core\CCMediator.Core.csproj" />
+    <ProjectReference Include="..\CCMediator.DependencyInjection\CCMediator.DependencyInjection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

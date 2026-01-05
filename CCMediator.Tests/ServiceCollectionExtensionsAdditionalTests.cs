@@ -8,6 +8,7 @@ namespace CCMediator.Tests;
 public class ServiceCollectionExtensionsAdditionalTests
 {
     private class DummyNotification : INotification { }
+
     private class DummyNotificationHandler : INotificationHandler<DummyNotification>
     {
         public Task Handle(DummyNotification notification, CancellationToken cancellationToken) => Task.CompletedTask;
@@ -16,19 +17,14 @@ public class ServiceCollectionExtensionsAdditionalTests
     [Fact]
     public void AddSimpleMediatorWithScanning_Should_Scan_Multiple_Assemblies()
     {
-        // Arrange
         var services = new ServiceCollection();
 
-        // Act: include current test assembly and the SimpleMediator assembly to ensure scanning across multiple assemblies doesn't fail
         services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly(), typeof(IMediator).Assembly);
         var provider = services.BuildServiceProvider();
 
-        // Assert
         var mediator = provider.GetService<IMediator>();
         Assert.NotNull(mediator);
 
-        // Also ensure that the handlers from this assembly are registered when present
-        // Register one handler locally via an additional service collection to simulate cross-assembly types
         services = new ServiceCollection();
         services.AddCCMediatorWithScanning(Assembly.GetExecutingAssembly());
         services.AddTransient<INotificationHandler<DummyNotification>, DummyNotificationHandler>();

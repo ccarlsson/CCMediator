@@ -1,7 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using CCMediator;
-using CCMediator.Implementation;
 
 namespace CCMediator.Tests;
 
@@ -23,7 +22,7 @@ public class MediatorSingleHandlerEnforcementTests
     public async Task Send_Should_Throw_When_Multiple_Handlers_Are_Registered()
     {
         var services = new ServiceCollection();
-        services.AddScoped<IMediator, Mediator>();
+        services.AddCCMediator();
         services.AddTransient<IRequestHandler<Ping, string>, PingHandlerOne>();
         services.AddTransient<IRequestHandler<Ping, string>, PingHandlerTwo>();
 

@@ -2,18 +2,19 @@ using Moq;
 using Xunit;
 using CCMediator;
 using CCMediator.Implementation;
+using CCMediator.Internal;
 
 namespace CCMediator.Tests;
 
 public class MediatorAdditionalTests
 {
-    private readonly Mock<IServiceProvider> _serviceProviderMock;
+    private readonly Mock<IHandlerResolver> _resolverMock;
     private readonly Mediator _mediator;
 
     public MediatorAdditionalTests()
     {
-        _serviceProviderMock = new Mock<IServiceProvider>();
-        _mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions());
+        _resolverMock = new Mock<IHandlerResolver>();
+        _mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions());
     }
 
     [Fact]
@@ -28,9 +29,13 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(request, It.Is<CancellationToken>(ct => ct.Equals(token))))
             .ReturnsAsync("Handled: Hello");
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
+
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(Enumerable.Empty<object>());
 
         // Act
         var response = await _mediator.Send(request, token);
@@ -50,9 +55,13 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(request, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("handler failed"));
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
+
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(Enumerable.Empty<object>());
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<InvalidOperationException>(() => _mediator.Send(request));
@@ -60,19 +69,19 @@ public class MediatorAdditionalTests
     }
 
     [Fact]
-    public async Task Send_Should_Wrap_Di_Resolution_Errors_In_MediatorException()
+    public async Task Send_Should_Wrap_Resolver_Errors_In_MediatorException()
     {
         // Arrange
         var request = new TestRequest { Message = "Hello" };
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Throws(new InvalidOperationException("di failed"));
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Throws(new InvalidOperationException("resolver failed"));
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<MediatorException>(() => _mediator.Send(request));
         Assert.IsType<InvalidOperationException>(ex.InnerException);
-        Assert.Equal("di failed", ex.InnerException!.Message);
+        Assert.Equal("resolver failed", ex.InnerException!.Message);
     }
 
     [Fact]
@@ -81,9 +90,9 @@ public class MediatorAdditionalTests
         // Arrange
         var notification = new TestNotification();
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(Enumerable.Empty<INotificationHandler<TestNotification>>());
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(Enumerable.Empty<object>());
 
         // Act & Assert (should not throw)
         await _mediator.Publish(notification);
@@ -106,9 +115,9 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(notification, It.Is<CancellationToken>(ct => ct.Equals(token))))
             .Returns(Task.CompletedTask);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handlerMock1.Object, handlerMock2.Object });
 
         // Act
         await _mediator.Publish(notification, token);
@@ -134,28 +143,28 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handlerMock1.Object, handlerMock2.Object });
 
         // Act & Assert
         await Assert.ThrowsAsync<AggregateException>(() => _mediator.Publish(notification));
     }
 
     [Fact]
-    public async Task Publish_Should_Wrap_Di_Resolution_Errors_In_MediatorException()
+    public async Task Publish_Should_Wrap_Resolver_Errors_In_MediatorException()
     {
         // Arrange
         var notification = new TestNotification();
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Throws(new InvalidOperationException("di failed"));
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Throws(new InvalidOperationException("resolver failed"));
 
         // Act & Assert
         var ex = await Assert.ThrowsAsync<MediatorException>(() => _mediator.Publish(notification));
         Assert.IsType<InvalidOperationException>(ex.InnerException);
-        Assert.Equal("di failed", ex.InnerException!.Message);
+        Assert.Equal("resolver failed", ex.InnerException!.Message);
     }
 
     [Fact]
@@ -164,15 +173,20 @@ public class MediatorAdditionalTests
         // Arrange
         var request1 = new TestRequest { Message = "One" };
         var request2 = new TestRequest { Message = "Two" };
+
         var handlerMock = new Mock<IRequestHandler<TestRequest, string>>();
         handlerMock
             .SetupSequence(h => h.Handle(It.IsAny<TestRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("Handled: One")
             .ReturnsAsync("Handled: Two");
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
+
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(Enumerable.Empty<object>());
 
         // Act
         var r1 = await _mediator.Send(request1);
@@ -200,11 +214,11 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handlerMock1.Object, handlerMock2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
+        var mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Sequential,
             SequentialPublishErrorHandling = NotificationPublishErrorHandling.StopOnFirstException
@@ -233,11 +247,11 @@ public class MediatorAdditionalTests
             .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new InvalidOperationException("bad handler 2"));
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object, handlerMock3.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handlerMock1.Object, handlerMock2.Object, handlerMock3.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
+        var mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Sequential,
             SequentialPublishErrorHandling = NotificationPublishErrorHandling.ContinueAndAggregateExceptions
@@ -273,11 +287,11 @@ public class MediatorAdditionalTests
                 throw new InvalidOperationException("slow fail");
             });
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handler1.Object, handler2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
+        var mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Parallel,
             AggregateExceptionsInParallel = false
@@ -312,11 +326,11 @@ public class MediatorAdditionalTests
                 throw new InvalidOperationException("bad handler 2");
             });
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handler1.Object, handler2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handler1.Object, handler2.Object });
 
-        var mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions
+        var mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions
         {
             NotificationPublishMode = NotificationPublishMode.Parallel,
             AggregateExceptionsInParallel = true

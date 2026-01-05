@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <PackageId>CCMediator</PackageId>
+    <Version>1.1.0</Version>
+    <Authors>Christer Carlsson</Authors>
+    <Description>A simple Mediator implementation</Description>
+    <PackageTags>mediator;simple;cqrs</PackageTags>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <Title>CC Mediator</Title>
+    <LangVersion>14.0</LangVersion>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\\" />
+  </ItemGroup>
+
+</Project>

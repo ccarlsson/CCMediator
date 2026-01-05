@@ -1,5 +1,6 @@
 using CCMediator;
 using CCMediator.Implementation;
+using CCMediator.Internal;
 using Moq;
 using Xunit;
 
@@ -12,9 +13,9 @@ public class PublishModeTests
     {
         var events = new List<string>();
 
-        var sp = new Mock<IServiceProvider>();
+        var resolver = new Mock<IHandlerResolver>();
         var options = new CCMediatorOptions { NotificationPublishMode = NotificationPublishMode.Sequential };
-        var mediator = new Mediator(sp.Object, options);
+        var mediator = new Mediator(resolver.Object, options);
 
         var notification = new TestNotification();
 
@@ -36,8 +37,8 @@ public class PublishModeTests
                 return Task.CompletedTask;
             });
 
-        sp.Setup(x => x.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new[] { handler1.Object, handler2.Object });
+        resolver.Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handler1.Object, handler2.Object });
 
         await mediator.Publish(notification);
 
@@ -47,9 +48,9 @@ public class PublishModeTests
     [Fact]
     public async Task Publish_ParallelMode_Should_Invoke_All_Handlers()
     {
-        var sp = new Mock<IServiceProvider>();
+        var resolver = new Mock<IHandlerResolver>();
         var options = new CCMediatorOptions { NotificationPublishMode = NotificationPublishMode.Parallel };
-        var mediator = new Mediator(sp.Object, options);
+        var mediator = new Mediator(resolver.Object, options);
 
         var notification = new TestNotification();
 
@@ -59,8 +60,8 @@ public class PublishModeTests
         handler1.Setup(h => h.Handle(notification, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
         handler2.Setup(h => h.Handle(notification, It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
 
-        sp.Setup(x => x.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new[] { handler1.Object, handler2.Object });
+        resolver.Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handler1.Object, handler2.Object });
 
         await mediator.Publish(notification);
 
