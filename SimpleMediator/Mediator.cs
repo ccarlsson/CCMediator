@@ -4,9 +4,15 @@ using System.Reflection;
 
 namespace SimpleMediator;
 
-// Mediator implementation
+/// <summary>
+/// Default <see cref="IMediator"/> implementation.
+/// </summary>
 public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions options) : IMediator
 {
+    /// <summary>
+    /// Initializes a new <see cref="Mediator"/> with default options.
+    /// </summary>
+    /// <param name="serviceProvider">The service provider used to resolve handlers and behaviors.</param>
     public Mediator(IServiceProvider serviceProvider) : this(serviceProvider, new SimpleMediatorOptions())
     {
     }
@@ -21,6 +27,7 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
         .GetMethod(nameof(SendCore), BindingFlags.NonPublic | BindingFlags.Static)
         ?? throw new InvalidOperationException("Unable to locate Mediator.SendCore method.");
 
+    /// <inheritdoc />
     public async Task<TResponse> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -116,6 +123,7 @@ public class Mediator(IServiceProvider serviceProvider, SimpleMediatorOptions op
         return next();
     }
 
+    /// <inheritdoc />
     public async Task Publish<TNotification>(TNotification notification, CancellationToken cancellationToken = default) where TNotification : INotification
     {
         // Resolve typed handlers and invoke directly (no reflection per handler)

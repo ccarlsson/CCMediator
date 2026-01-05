@@ -12,6 +12,7 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Title>Simple Mediator</Title>
 		<LangVersion>14.0</LangVersion>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
