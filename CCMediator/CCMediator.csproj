@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net10.0</TargetFramework>
 		<PackageId>CCMediator</PackageId>
-		<Version>1.0.2</Version>
+		<Version>1.0.3</Version>
 		<Authors>Christer Carlsson</Authors>
 		<Description>A simple Mediator implementation</Description>
 		<PackageTags>mediator;simple;cqrs</PackageTags>
