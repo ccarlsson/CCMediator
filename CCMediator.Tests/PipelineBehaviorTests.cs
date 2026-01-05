@@ -2,18 +2,19 @@ using Moq;
 using Xunit;
 using CCMediator;
 using CCMediator.Implementation;
+using CCMediator.Internal;
 
 namespace CCMediator.Tests;
 
 public class PipelineBehaviorTests
 {
-    private readonly Mock<IServiceProvider> _serviceProviderMock;
+    private readonly Mock<IHandlerResolver> _resolverMock;
     private readonly Mediator _mediator;
 
     public PipelineBehaviorTests()
     {
-        _serviceProviderMock = new Mock<IServiceProvider>();
-        _mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions());
+        _resolverMock = new Mock<IHandlerResolver>();
+        _mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions());
     }
 
     [Fact]
@@ -49,13 +50,13 @@ public class PipelineBehaviorTests
                 return result;
             });
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestRequest, string>>)))
-            .Returns(new[] { b1.Object, b2.Object });
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(new object[] { b1.Object, b2.Object });
 
         var response = await _mediator.Send(request);
 
@@ -78,13 +79,13 @@ public class PipelineBehaviorTests
             .Setup(b => b.Handle(request, It.IsAny<Func<Task<string>>>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync("short");
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestRequest, string>>)))
-            .Returns(new[] { behavior.Object });
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(new object[] { behavior.Object });
 
         var response = await _mediator.Send(request);
 
@@ -111,13 +112,13 @@ public class PipelineBehaviorTests
                 return result + "-modified";
             });
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IPipelineBehavior<TestRequest, string>>)))
-            .Returns(new[] { behavior.Object });
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(new object[] { behavior.Object });
 
         var response = await _mediator.Send(request);
 

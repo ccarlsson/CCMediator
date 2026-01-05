@@ -2,18 +2,19 @@
 using Xunit;
 using CCMediator;
 using CCMediator.Implementation;
+using CCMediator.Internal;
 
 namespace CCMediator.Tests;
 
 public class MediatorTests
 {
-    private readonly Mock<IServiceProvider> _serviceProviderMock;
+    private readonly Mock<IHandlerResolver> _resolverMock;
     private readonly Mediator _mediator;
 
     public MediatorTests()
     {
-        _serviceProviderMock = new Mock<IServiceProvider>();
-        _mediator = new Mediator(_serviceProviderMock.Object, new CCMediatorOptions());
+        _resolverMock = new Mock<IHandlerResolver>();
+        _mediator = new Mediator(_resolverMock.Object, new CCMediatorOptions());
     }
 
     [Fact]
@@ -26,9 +27,13 @@ public class MediatorTests
             .Setup(h => h.Handle(request, It.IsAny<CancellationToken>()))
             .ReturnsAsync("Handled: Hello");
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(new[] { handlerMock.Object });
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Returns(handlerMock.Object);
+
+        _resolverMock
+            .Setup(r => r.GetPipelineBehaviors(typeof(TestRequest), typeof(string)))
+            .Returns(Enumerable.Empty<object>());
 
         // Act
         var response = await _mediator.Send(request);
@@ -53,9 +58,9 @@ public class MediatorTests
             .Setup(h => h.Handle(notification, It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<INotificationHandler<TestNotification>>)))
-            .Returns(new List<INotificationHandler<TestNotification>> { handlerMock1.Object, handlerMock2.Object });
+        _resolverMock
+            .Setup(r => r.GetNotificationHandlers(typeof(TestNotification)))
+            .Returns(new object[] { handlerMock1.Object, handlerMock2.Object });
 
         // Act
         await _mediator.Publish(notification);
@@ -71,9 +76,9 @@ public class MediatorTests
         // Arrange
         var request = new TestRequest { Message = "Hello" };
 
-        _serviceProviderMock
-            .Setup(sp => sp.GetService(typeof(IEnumerable<IRequestHandler<TestRequest, string>>)))
-            .Returns(Array.Empty<IRequestHandler<TestRequest, string>>());
+        _resolverMock
+            .Setup(r => r.GetSingleRequestHandler(typeof(TestRequest), typeof(string)))
+            .Throws(new HandlerNotFoundException(typeof(TestRequest), typeof(string)));
 
         // Act & Assert
         await Assert.ThrowsAsync<HandlerNotFoundException>(() => _mediator.Send(request));
