@@ -3,6 +3,14 @@
 A lightweight, dependency-injection-friendly mediator library for .NET 10, inspired by MediatR.
 Provides request/response and notification handling with minimal dependencies.
 
+## Packages
+
+This repository ships three NuGet packages:
+
+- `CCMediator` (recommended) – meta package that depends on `CCMediator.Core` + `CCMediator.DependencyInjection`.
+- `CCMediator.Core` – core abstractions and mediator implementation (DI-container agnostic).
+- `CCMediator.DependencyInjection` – `Microsoft.Extensions.DependencyInjection` integration (service registration + optional scanning).
+
 ## Features
 
 - **Request/Response**: Send requests and receive responses via strongly-typed handlers.
@@ -16,15 +24,39 @@ Provides request/response and notification handling with minimal dependencies.
 
 ### Installation
 
-Build and pack the library:
+Recommended (includes DI integration):
+
+```sh
+dotnet add package CCMediator
+```
+
+Alternative packages:
+
+```sh
+# Core only (no DI helpers)
+dotnet add package CCMediator.Core
+
+# Microsoft.Extensions.DependencyInjection integration
+dotnet add package CCMediator.DependencyInjection
+```
+
+### Build / Pack
+
+Pack all packages:
 
 ```sh
 dotnet pack -c Release
 ```
 
-Find the `.nupkg` in `CCMediator/bin/Release/` and add it to your projects via a local NuGet source or publish to NuGet.org.
+The generated `.nupkg` files will be placed under each project folder, e.g.:
+- `CCMediator/bin/Release/`
+- `CCMediator.Core/bin/Release/`
+- `CCMediator.DependencyInjection/bin/Release/`
 
 ### Usage
+
+> The DI registration extension methods (`AddCCMediator`, `AddCCMediatorWithScanning`) are provided by the
+> `CCMediator.DependencyInjection` package (and therefore also by the `CCMediator` meta package).
 
 #### Register with DI (no scanning / explicit registration)
 
