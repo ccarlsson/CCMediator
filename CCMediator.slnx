@@ -1,0 +1,20 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution items/">
+    <File Path="LICENSE.txt" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/Solution items/docs/">
+    <File Path="Srs.md" />
+  </Folder>
+  <Project Path="CCMediator.Core/CCMediator.Core.csproj" />
+  <Project Path="CCMediator.DependencyInjection/CCMediator.DependencyInjection.csproj" />
+  <Project Path="CCMediator.Tests/CCMediator.Tests.csproj">
+    <Build Solution="Release|Any CPU" Project="false" />
+  </Project>
+  <Project Path="CCMediator/CCMediator.csproj" />
+</Solution>
