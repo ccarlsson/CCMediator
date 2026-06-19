@@ -3,13 +3,17 @@
 A lightweight, dependency-injection-friendly mediator library for .NET 10, inspired by MediatR.
 Provides request/response and notification handling with minimal dependencies.
 
+> Warning
+> This is an experimental test project used to explore how a mediator works.
+> It is not intended for production use.
+
 ## Packages
 
 This repository ships three NuGet packages:
 
-- `CCMediator` (recommended) � meta package that depends on `CCMediator.Core` + `CCMediator.DependencyInjection`.
-- `CCMediator.Core` � core abstractions and mediator implementation (DI-container agnostic).
-- `CCMediator.DependencyInjection` � `Microsoft.Extensions.DependencyInjection` integration (service registration + optional scanning).
+- `CCMediator` (recommended) - meta package that depends on `CCMediator.Core` + `CCMediator.DependencyInjection`.
+- `CCMediator.Core` - core abstractions and mediator implementation (DI-container agnostic).
+- `CCMediator.DependencyInjection` - `Microsoft.Extensions.DependencyInjection` integration (service registration + optional scanning).
 
 ## Features
 
@@ -53,6 +57,23 @@ The generated `.nupkg` files will be placed under each project folder, e.g.:
 - `CCMediator/bin/Release/`
 - `CCMediator.Core/bin/Release/`
 - `CCMediator.DependencyInjection/bin/Release/`
+
+### Publish to NuGet (ordered)
+
+Because `CCMediator` is a meta package that depends on the other two packages, publish in this order:
+
+1. `CCMediator.Core`
+2. `CCMediator.DependencyInjection`
+3. `CCMediator`
+
+Use the helper script to enforce the order automatically:
+
+```sh
+export NUGET_API_KEY="<your-nuget-api-key>"
+./scripts/publish-nuget.sh 1.1.0 "$NUGET_API_KEY"
+```
+
+The script packs in `Release` and pushes with `--skip-duplicate`.
 
 ### Usage
 

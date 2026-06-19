@@ -5,6 +5,9 @@
     <version>1.1.0</version>
     <authors>Christer Carlsson</authors>
     <description>Meta package for CCMediator (core + Microsoft.Extensions.DependencyInjection integration).</description>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/ccarlsson/CCMediator</projectUrl>
+    <repository type="git" url="https://github.com/ccarlsson/CCMediator" />
     <tags>mediator simple cqrs</tags>
     <readme>README.md</readme>
     <dependencies>

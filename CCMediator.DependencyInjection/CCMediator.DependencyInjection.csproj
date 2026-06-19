@@ -6,6 +6,10 @@
     <Version>1.1.0</Version>
     <Authors>Christer Carlsson</Authors>
     <Description>Microsoft.Extensions.DependencyInjection integration for CCMediator</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ccarlsson/CCMediator</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ccarlsson/CCMediator</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <PackageTags>mediator;simple;cqrs;di;dependencyinjection</PackageTags>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
