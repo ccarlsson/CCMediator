@@ -1,0 +1,102 @@
+name: Publish to NuGet
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to publish (e.g. 1.2.0). Must match <Version> in the .csproj files."
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      id-token: write # required for NuGet Trusted Publishing (OIDC)
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: |
+            8.0.x
+            9.0.x
+            10.0.x
+
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            version="${GITHUB_REF_NAME#v}"
+          else
+            version="${{ inputs.version }}"
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "Publishing version $version"
+
+      - name: Restore
+        run: dotnet restore CCMediator.slnx
+
+      - name: Build
+        run: dotnet build CCMediator.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test CCMediator.slnx --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack CCMediator.slnx --configuration Release --no-build
+
+      # Fails fast with a clear message if the .csproj/Directory.Packages.props
+      # version wasn't bumped to match the release being published, instead of
+      # silently pushing a stale (or missing) package.
+      - name: Verify packed versions match release
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.version.outputs.version }}"
+          for pkg in CCMediator.Core CCMediator.DependencyInjection CCMediator; do
+            path="$pkg/bin/Release/$pkg.$version.nupkg"
+            if [ ! -f "$path" ]; then
+              echo "::error::Expected $path but it was not produced. Bump <Version> in the .csproj files (and Directory.Packages.props / CCMediator.nuspec) to $version before releasing."
+              exit 1
+            fi
+          done
+
+      # Exchanges a short-lived GitHub OIDC token for a temporary (1-hour)
+      # NuGet API key. Requires a Trusted Publishing policy configured on
+      # nuget.org for this repo + workflow file. See README.md.
+      - name: NuGet login
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      # Published in dependency order: CCMediator depends on the other two.
+      - name: Push CCMediator.Core
+        run: >
+          dotnet nuget push "CCMediator.Core/bin/Release/CCMediator.Core.${{ steps.version.outputs.version }}.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Push CCMediator.DependencyInjection
+        run: >
+          dotnet nuget push "CCMediator.DependencyInjection/bin/Release/CCMediator.DependencyInjection.${{ steps.version.outputs.version }}.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate
+
+      - name: Push CCMediator (meta package)
+        run: >
+          dotnet nuget push "CCMediator/bin/Release/CCMediator.${{ steps.version.outputs.version }}.nupkg"
+          --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
+          --source https://api.nuget.org/v3/index.json
+          --skip-duplicate

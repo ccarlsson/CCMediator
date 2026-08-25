@@ -58,22 +58,35 @@ The generated `.nupkg` files will be placed under each project folder, e.g.:
 - `CCMediator.Core/bin/Release/`
 - `CCMediator.DependencyInjection/bin/Release/`
 
-### Publish to NuGet (ordered)
+### Publish to NuGet
 
-Because `CCMediator` is a meta package that depends on the other two packages, publish in this order:
+Publishing runs in CI via [`.github/workflows/publish.yml`](.github/workflows/publish.yml) using
+[NuGet Trusted Publishing](https://learn.microsoft.com/en-us/nuget/nuget-org/trusted-publishing) — no
+NuGet API key is stored as a secret. The workflow packs and pushes in dependency order
+(`CCMediator.Core` → `CCMediator.DependencyInjection` → `CCMediator`), using `--skip-duplicate`.
 
-1. `CCMediator.Core`
-2. `CCMediator.DependencyInjection`
-3. `CCMediator`
+**To release a new version:**
 
-Use the helper script to enforce the order automatically:
+1. Bump `<Version>` in `CCMediator/CCMediator.csproj`, `CCMediator.Core/CCMediator.Core.csproj`,
+   `CCMediator.DependencyInjection/CCMediator.DependencyInjection.csproj`, the `CCMediator.Core` /
+   `CCMediator.DependencyInjection` versions in `Directory.Packages.props`, and the dependency versions
+   in `CCMediator/CCMediator.nuspec`. Commit and merge.
+2. Publish a GitHub Release with tag `vX.Y.Z` matching that version (e.g. `v1.2.0`). This triggers the
+   workflow automatically. It can also be run manually from the Actions tab
+   (`workflow_dispatch`) by entering the version.
 
-```sh
-export NUGET_API_KEY="<your-nuget-api-key>"
-./scripts/publish-nuget.sh 1.1.0 "$NUGET_API_KEY"
-```
+The workflow verifies the packed `.nupkg` version matches the release tag before pushing anything, so a
+forgotten version bump fails the run instead of publishing a stale package.
 
-The script packs in `Release` and pushes with `--skip-duplicate`.
+**One-time setup (already done for this repo, documented for reference):**
+
+1. On [nuget.org](https://www.nuget.org) → your username → **Trusted Publishing** → add a policy:
+   - **Repository Owner:** `ccarlsson`
+   - **Repository:** `CCMediator`
+   - **Workflow File:** `publish.yml`
+   - **Environment:** leave empty (the workflow doesn't use a GitHub environment)
+2. In the GitHub repo → **Settings → Secrets and variables → Actions**, add a secret `NUGET_USER` with
+   your nuget.org profile username (`ccarlsson`) — not your email address.
 
 ### Usage
 
