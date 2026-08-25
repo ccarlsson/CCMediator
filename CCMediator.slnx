@@ -13,8 +13,6 @@
   </Folder>
   <Project Path="CCMediator.Core/CCMediator.Core.csproj" />
   <Project Path="CCMediator.DependencyInjection/CCMediator.DependencyInjection.csproj" />
-  <Project Path="CCMediator.Tests/CCMediator.Tests.csproj">
-    <Build Solution="Release|Any CPU" Project="false" />
-  </Project>
+  <Project Path="CCMediator.Tests/CCMediator.Tests.csproj" />
   <Project Path="CCMediator/CCMediator.csproj" />
 </Solution>
