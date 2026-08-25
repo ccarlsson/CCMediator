@@ -11,7 +11,7 @@ Provides request/response and notification handling with minimal dependencies.
 
 This repository ships three NuGet packages:
 
-- `CCMediator` (recommended) - meta package that depends on `CCMediator.Core` + `CCMediator.DependencyInjection`.
+- `CCMediator` (recommended) - meta package with no code of its own; it just depends on `CCMediator.Core` + `CCMediator.DependencyInjection`, so installing it pulls in both transitively.
 - `CCMediator.Core` - core abstractions and mediator implementation (DI-container agnostic).
 - `CCMediator.DependencyInjection` - `Microsoft.Extensions.DependencyInjection` integration (service registration + optional scanning).
 
@@ -33,6 +33,11 @@ Recommended (includes DI integration):
 ```sh
 dotnet add package CCMediator
 ```
+
+`CCMediator` ships no assemblies itself — it's a dependency-only package, so this single install
+transitively brings in both `CCMediator.Core` (abstractions + implementation) and
+`CCMediator.DependencyInjection` (the `AddCCMediator`/`AddCCMediatorWithScanning` extension methods).
+You don't need to install those two separately.
 
 Alternative packages:
 
